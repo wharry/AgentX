@@ -153,9 +153,9 @@
                 </executions>
             </plugin>
 
-            <!--<plugin>-->
-                <!--<artifactId>maven-assembly-plugin</artifactId>-->
-                <!--<executions>-->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
                     <!--<execution>-->
                         <!--<id>client</id>-->
                         <!--<phase>package</phase>-->
@@ -175,27 +175,27 @@
                             <!--<finalName>${project.build.finalName}-client</finalName>-->
                         <!--</configuration>-->
                     <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>server</id>-->
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>single</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<appendAssemblyId>false</appendAssemblyId>-->
-                            <!--<archive>-->
-                                <!--<manifest>-->
-                                    <!--<mainClass>cc.agentx.server.Main</mainClass>-->
-                                <!--</manifest>-->
-                            <!--</archive>-->
-                            <!--<descriptorRefs>-->
-                                <!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
-                            <!--</descriptorRefs>-->
-                            <!--<finalName>${project.build.finalName}-server</finalName>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+                    <execution>
+                        <id>server</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <archive>
+                                <manifest>
+                                    <mainClass>cc.agentx.server.Main</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <finalName>${project.build.finalName}-server</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
