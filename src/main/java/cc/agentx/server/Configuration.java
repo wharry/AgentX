@@ -53,7 +53,7 @@ public class Configuration {
     @Expose
     private String host = "0.0.0.0";
     @Expose
-    private int port = 9999;
+    private int port = 8080;
     @Expose
     private int[] relayPort = {};
     @Expose
@@ -94,52 +94,57 @@ public class Configuration {
 
     @SuppressWarnings("Duplicates")
     private static void load() throws Exception {
-        String json = "";
+//        String json = "";
+//
+//        InputStream inputStream = null;
+//        for (String path : CONFIG_FILE_PATH) {
+//            inputStream = Configuration.class.getResourceAsStream(path);
+//            if (inputStream != null) {
+//                log.info("\tFound resource [{}]", path);
+//                break;
+//            }
+//            log.debug("\tCould NOT find resource [{}]", path);
+//        }
+//
+//        for (String path : CONFIG_FILE_PATH) {
+//            File file = new File(BASE_PATH, path);
+//            if (file.exists()) {
+//                inputStream = new FileInputStream(file);
+//                log.info("\tFound resource [{}]", file.getAbsolutePath());
+//                break;
+//            }
+//            log.debug("\tCould NOT find resource [{}]", file.getAbsolutePath());
+//        }
+//
+//        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+//
+//        if (inputStream == null) {
+//            log.warn("\tCould NOT find resource [{}]", "config.json");
+//            File configFile = new File(BASE_PATH, "config.json");
+//            if (configFile.createNewFile()) {
+//                log.warn("\tCreate default [config.json] at [{}]", configFile.getPath());
+//                BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
+//                writer.write(json = gson.toJson(new Configuration()));
+//                writer.close();
+//                log.warn("\tPlease reboot this program after configuration.");
+//                System.exit(0);
+//            } else {
+//                throw new RuntimeException("file not found (" + configFile.getPath() + ")");
+//            }
+//        } else {
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+//            while (reader.ready()) {
+//                json += reader.readLine().concat("\n");
+//            }
+//            reader.close();
+//        }
 
-        InputStream inputStream = null;
-        for (String path : CONFIG_FILE_PATH) {
-            inputStream = Configuration.class.getResourceAsStream(path);
-            if (inputStream != null) {
-                log.info("\tFound resource [{}]", path);
-                break;
-            }
-            log.debug("\tCould NOT find resource [{}]", path);
-        }
-
-        for (String path : CONFIG_FILE_PATH) {
-            File file = new File(BASE_PATH, path);
-            if (file.exists()) {
-                inputStream = new FileInputStream(file);
-                log.info("\tFound resource [{}]", file.getAbsolutePath());
-                break;
-            }
-            log.debug("\tCould NOT find resource [{}]", file.getAbsolutePath());
-        }
-
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
-
-        if (inputStream == null) {
-            log.warn("\tCould NOT find resource [{}]", "config.json");
-            File configFile = new File(BASE_PATH, "config.json");
-            if (configFile.createNewFile()) {
-                log.warn("\tCreate default [config.json] at [{}]", configFile.getPath());
-                BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
-                writer.write(json = gson.toJson(new Configuration()));
-                writer.close();
-                log.warn("\tPlease reboot this program after configuration.");
-                System.exit(0);
-            } else {
-                throw new RuntimeException("file not found (" + configFile.getPath() + ")");
-            }
-        } else {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            while (reader.ready()) {
-                json += reader.readLine().concat("\n");
-            }
-            reader.close();
-        }
-
-        Configuration.INSTANCE = gson.fromJson(json, Configuration.class);
+        //Configuration.INSTANCE = gson.fromJson(json, Configuration.class);
+        Configuration.INSTANCE =new Configuration();
+        Configuration.INSTANCE.protocol=System.getProperty("protocol");
+        Configuration.INSTANCE.encryption=System.getProperty("encryption");
+        Configuration.INSTANCE.password=System.getProperty("password");
+        
         log.debug(INSTANCE.toString());
     }
 
