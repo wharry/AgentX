@@ -18,6 +18,7 @@ package cc.agentx.server.net.nio;
 
 import cc.agentx.Constants;
 import cc.agentx.server.Configuration;
+import cc.agentx.server.net.nio.websocket.WebSocketServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -52,19 +53,19 @@ public final class XServer {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
-                            socketChannel.pipeline()
-                                    .addLast("logging", new LoggingHandler(LogLevel.DEBUG))
-                                    .addLast(new XConnectHandler());
-                            if (config.getReadLimit() != 0 || config.getWriteLimit() != 0) {
-                                socketChannel.pipeline().addLast(
-                                        new GlobalTrafficShapingHandler(Executors.newScheduledThreadPool(1), config.getWriteLimit(), config.getReadLimit())
-                                );
-                            }
-                        }
-                    });
+                    .channel(NioServerSocketChannel.class).childHandler(new WebSocketServerInitializer(null));
+//                    .childHandler(new ChannelInitializer<SocketChannel>() {
+//                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+//                            socketChannel.pipeline()
+//                                    .addLast("logging", new LoggingHandler(LogLevel.DEBUG))
+//                                    .addLast(new XConnectHandler());
+//                            if (config.getReadLimit() != 0 || config.getWriteLimit() != 0) {
+//                                socketChannel.pipeline().addLast(
+//                                        new GlobalTrafficShapingHandler(Executors.newScheduledThreadPool(1), config.getWriteLimit(), config.getReadLimit())
+//                                );
+//                            }
+//                        }
+//                    });
             log.info("\tStartup {}-{}-server [{}]", Constants.APP_NAME, Constants.APP_VERSION, config.getProtocol());
             new Thread(() -> new UdpServer().start()).start();
             ChannelFuture future = bootstrap.bind(config.getHost(), config.getPort()).sync();
