@@ -89,7 +89,7 @@ public class WebSocketIndexPageHandler extends SimpleChannelInboundHandler<FullH
     }
 
     private static String getWebSocketLocation(ChannelPipeline cp, HttpRequest req, String path) {
-        String protocol = "ws";
+        String protocol = "http";
         if (cp.get(SslHandler.class) != null) {
             // SSL in use so use Secure WebSockets
             protocol = "wss";

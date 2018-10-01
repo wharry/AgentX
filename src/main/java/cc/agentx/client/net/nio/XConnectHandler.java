@@ -165,7 +165,7 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
             host = config.getServerHost();
             port = config.getServerPort();
         }
-        URI uri = new URI("ws://" + host + ":" + port + "/websocket");
+        URI uri = new URI("http://" + host + ":" + port + "/websocket");
         // ping target
         WebSocketHandShakerHandler handler = new WebSocketHandShakerHandler(WebSocketClientHandshakerFactory.newHandshaker(
                 uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()), promise, System.currentTimeMillis());
