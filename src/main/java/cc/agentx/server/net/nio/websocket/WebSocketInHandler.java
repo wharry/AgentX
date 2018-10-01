@@ -45,14 +45,14 @@ public final class WebSocketInHandler extends ChannelInboundHandlerAdapter {
         if (dstChannel.isActive()) {
             ByteBuf byteBuf = (ByteBuf) msg;
             try {
-                if (!byteBuf.hasArray()) {
+               // if (!byteBuf.hasArray()) {
                     byte[] bytes = new byte[byteBuf.readableBytes()];
                     byteBuf.getBytes(0, bytes);
 
                     dstChannel.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(wrapper.wrap(bytes))));
                     log.info("\tClient <========== Target \tGet [{} bytes]", bytes.length);
 
-                }
+               // }
             } finally {
                 ReferenceCountUtil.release(msg);
             }

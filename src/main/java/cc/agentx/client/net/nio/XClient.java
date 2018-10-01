@@ -59,7 +59,7 @@ public final class XClient {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline()
-                                    .addLast("logging", new LoggingHandler(LogLevel.DEBUG))
+                                    //.addLast("logging", new LoggingHandler(LogLevel.ERROR))
                                     .addLast(new SocksInitRequestDecoder())
                                     .addLast(new SocksMessageEncoder())
                                     .addLast(new Socks5Handler())

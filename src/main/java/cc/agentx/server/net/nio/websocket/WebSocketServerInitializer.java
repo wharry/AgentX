@@ -51,7 +51,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         if (sslCtx != null) {
             pipeline.addLast(sslCtx.newHandler(ch.alloc()));
         }
-        pipeline.addLast("logging", new LoggingHandler(LogLevel.DEBUG));
+       // pipeline.addLast("logging", new LoggingHandler(LogLevel.ERROR));
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(65536));
         pipeline.addLast(new WebSocketServerCompressionHandler());

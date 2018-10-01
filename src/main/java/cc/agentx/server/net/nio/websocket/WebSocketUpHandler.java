@@ -52,7 +52,7 @@ public final class WebSocketUpHandler extends SimpleChannelInboundHandler<WebSoc
             if (dstChannel.isActive()) {
                 ByteBuf byteBuf = frame.content();
                 try {
-                    if (!byteBuf.hasArray()) {
+                   // if (!byteBuf.hasArray()) {
                         byte[] bytes = new byte[byteBuf.readableBytes()];
                         byteBuf.getBytes(0, bytes);
                         bytes = wrapper.unwrap(bytes);
@@ -60,9 +60,9 @@ public final class WebSocketUpHandler extends SimpleChannelInboundHandler<WebSoc
                             dstChannel.writeAndFlush(Unpooled.wrappedBuffer(bytes));
                             log.info("\tClient ==========> Target \tSend [{} bytes]", bytes.length);
                         }
-                    }
+                    //}
                 } finally {
-                    ReferenceCountUtil.release(frame);
+                   // ReferenceCountUtil.release(frame);
                 }
             }
 

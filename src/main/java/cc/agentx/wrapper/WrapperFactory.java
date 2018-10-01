@@ -92,6 +92,8 @@ public class WrapperFactory {
                 return new FrameWrapper(262144, new ZeroPaddingWrapper(200, 56));
             case "random-padding":
                 return new FrameWrapper(262144, new RandomPaddingWrapper(200, 56));
+            case "FakedHttp":
+                return new FakedHttpWrapper(true);
             default:
                 throw new Exception("unknown process function");
         }
@@ -125,6 +127,8 @@ public class WrapperFactory {
             case "compress":
             case "zero-padding":
             case "random-padding":
+                return true;
+            case "FakedHttp":
                 return true;
             default:
                 return false;

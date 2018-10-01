@@ -17,6 +17,9 @@
 package cc.agentx.client.net.nio;
 
 import cc.agentx.client.Configuration;
+import cc.agentx.client.net.nio.websocket.WebSocketHandShakerHandler;
+import cc.agentx.client.net.nio.websocket.WebSocketInHandler;
+import cc.agentx.client.net.nio.websocket.WebSocketUpHandler;
 import cc.agentx.protocol.request.XRequestResolver;
 import cc.agentx.wrapper.Wrapper;
 import cc.agentx.wrapper.WrapperFactory;
@@ -24,7 +27,15 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
+import io.netty.handler.codec.http.websocketx.WebSocketVersion;
+import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
 import io.netty.handler.codec.socks.*;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.Future;
@@ -34,6 +45,7 @@ import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.net.URI;
 
 @ChannelHandler.Sharable
 public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdRequest> {
@@ -117,9 +129,9 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
                                                 if (proxyMode) {
                                                     // handshaking to remote proxy
                                                     xRequestBytes = requestResolver.wrap(xRequestBytes);
-                                                    outboundChannel.writeAndFlush(Unpooled.wrappedBuffer(
+                                                    outboundChannel.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(
                                                             exposeRequest ? xRequestBytes : wrapper.wrap(xRequestBytes)
-                                                    ));
+                                                    )));
                                                 }
 
                                                 // task handover
@@ -127,9 +139,9 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
                                                 ctx.pipeline()
                                                         .remove(XConnectHandler.this);
                                                 outboundChannel.pipeline()
-                                                        .addLast(new XRelayHandler(ctx.channel(), proxyMode ? wrapper : rawWrapper, false));
+                                                        .addLast(new WebSocketInHandler(ctx.channel(), proxyMode ? wrapper : rawWrapper));
                                                 ctx.pipeline()
-                                                        .addLast(new XRelayHandler(outboundChannel, proxyMode ? wrapper : rawWrapper, true));
+                                                        .addLast(new WebSocketUpHandler(outboundChannel, proxyMode ? wrapper : rawWrapper));
                                             }
                                         });
                             }
@@ -153,14 +165,27 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
             host = config.getServerHost();
             port = config.getServerPort();
         }
-
+        URI uri = new URI("ws://" + host + ":" + port + "/websocket");
         // ping target
+        WebSocketHandShakerHandler handler = new WebSocketHandShakerHandler(WebSocketClientHandshakerFactory.newHandshaker(
+                uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()), promise, System.currentTimeMillis());
         bootstrap.group(ctx.channel().eventLoop())
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
                 .option(ChannelOption.SO_KEEPALIVE, true)
-                .handler(new XPingHandler(promise, System.currentTimeMillis()))
-                .connect(host, port)
+                //.handler(new XPingHandler(promise, System.currentTimeMillis()))
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch) {
+                        ChannelPipeline p = ch.pipeline();
+
+                        p.addLast(
+                                new HttpClientCodec(),
+                                new HttpObjectAggregator(81920),
+                                WebSocketClientCompressionHandler.INSTANCE,
+                                handler);
+                    }
+                }).connect(host, port)
                 .addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {

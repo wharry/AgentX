@@ -82,7 +82,7 @@ public class Main {
         try {
             Main.init();
             Main.startHttpServer();
-            Main.popConsolePage();
+            //Main.popConsolePage();
             xClient = XClient.getInstance();
             xClient.start();
         } finally {
