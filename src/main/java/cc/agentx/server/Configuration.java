@@ -53,7 +53,7 @@ public class Configuration {
     @Expose
     private String host = "0.0.0.0";
     @Expose
-    private int port = 8000;
+    private int port = 8080;
     @Expose
     private int[] relayPort = {};
     @Expose

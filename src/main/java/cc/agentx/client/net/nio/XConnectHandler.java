@@ -21,6 +21,7 @@ import cc.agentx.client.net.nio.websocket.WebSocketHandShakerHandler;
 import cc.agentx.client.net.nio.websocket.WebSocketInHandler;
 import cc.agentx.client.net.nio.websocket.WebSocketUpHandler;
 import cc.agentx.protocol.request.XRequestResolver;
+import cc.agentx.server.cache.DnsCache;
 import cc.agentx.wrapper.Wrapper;
 import cc.agentx.wrapper.WrapperFactory;
 import io.netty.bootstrap.Bootstrap;
@@ -166,6 +167,7 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
             port = config.getServerPort();
         }
         URI uri = new URI("ws://" + host + ":" + port + "/websocket");
+       // host= DnsCache.get(host);
         // ping target
         WebSocketHandShakerHandler handler = new WebSocketHandShakerHandler(WebSocketClientHandshakerFactory.newHandshaker(
                 uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()), promise, System.currentTimeMillis());
