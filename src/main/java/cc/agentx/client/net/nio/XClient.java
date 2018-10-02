@@ -19,6 +19,8 @@ package cc.agentx.client.net.nio;
 import cc.agentx.Constants;
 import cc.agentx.client.Configuration;
 import cc.agentx.client.net.Status;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -33,6 +35,10 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public final class XClient {
     private static final InternalLogger log = InternalLoggerFactory.getInstance(XClient.class);
@@ -47,6 +53,8 @@ public final class XClient {
     }
 
     public void start() {
+        LoggerContext factory =(LoggerContext) LoggerFactory.getILoggerFactory();
+        factory.getLogger("ROOT").setLevel(Level.ERROR);
         Configuration config = Configuration.INSTANCE;
         InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
         bossGroup = new NioEventLoopGroup(1);

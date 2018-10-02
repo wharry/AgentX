@@ -19,6 +19,8 @@ package cc.agentx.server.net.nio;
 import cc.agentx.Constants;
 import cc.agentx.server.Configuration;
 import cc.agentx.server.net.nio.websocket.WebSocketServerInitializer;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -32,6 +34,8 @@ import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
 
@@ -47,7 +51,10 @@ public final class XServer {
 
     public void start() {
         Configuration config = Configuration.INSTANCE;
+        LoggerContext factory =(LoggerContext) LoggerFactory.getILoggerFactory();
+        factory.getLogger("ROOT").setLevel(Level.ERROR);
         InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
+
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
