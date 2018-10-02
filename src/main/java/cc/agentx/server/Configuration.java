@@ -143,15 +143,15 @@ public class Configuration {
         Configuration.INSTANCE =new Configuration();
         Configuration.INSTANCE.protocol=System.getProperty("protocol");
         if(Configuration.INSTANCE.protocol == null){
-            Configuration.INSTANCE.protocol=System.getenv("protocol");
+            Configuration.INSTANCE.protocol=System.getenv().get("protocol");
         }
         Configuration.INSTANCE.encryption=System.getProperty("encryption");
         if(Configuration.INSTANCE.encryption == null){
-            Configuration.INSTANCE.encryption=System.getenv("encryption");
+            Configuration.INSTANCE.encryption=System.getenv().get("encryption");
         }
         Configuration.INSTANCE.password=System.getProperty("password");
         if(Configuration.INSTANCE.password == null){
-            Configuration.INSTANCE.password=System.getenv("password");
+            Configuration.INSTANCE.password=System.getenv().get("password");
         }
         log.debug(INSTANCE.toString());
     }
