@@ -52,7 +52,7 @@ public class WebSocketHandShakerHandler extends SimpleChannelInboundHandler<Obje
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        System.out.println("WebSocket Client disconnected!");
+        log.info("WebSocket Client disconnected!");
     }
 
     @Override

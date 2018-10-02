@@ -161,8 +161,8 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
                 }
         );
 
-       String host = request.host();
-       int port = request.port();
+        String host = request.host();
+        int port = request.port();
         if (host.equals(config.getConsoleDomain())) {
             host = "localhost";
             port = config.getConsolePort();
@@ -172,24 +172,25 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
         }
         String url;
         final SslContext sslCtx;
-        if(config.isSsl()){
-            url="wss://" + host + ":" + port + "/websocket";
+        if (config.isSsl()) {
+            url = "wss://" + host + ":" + port + "/websocket";
             sslCtx = SslContextBuilder.forClient()
                     .trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-            port=443;
-        }else
-        {
-            url="ws://" + host + ":" + port + "/websocket";
+            port = 443;
+        } else {
+            url = "ws://" + host + ":" + port + "/websocket";
             sslCtx = null;
         }
         URI uri = new URI(url);
-       // host= DnsCache.get(host);
+        // host= DnsCache.get(host);
         // ping target
         WebSocketHandShakerHandler handler = new WebSocketHandShakerHandler(WebSocketClientHandshakerFactory.newHandshaker(
                 uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()), promise, System.currentTimeMillis());
-        final String inerHost=host;
-        final int inerPort=port;
-        bootstrap.group(ctx.channel().eventLoop())
+        final String inerHost = host;
+        final int inerPort = port;
+        //有足够的锁才能连接
+
+        ChannelFuture cf = bootstrap.group(ctx.channel().eventLoop())
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
                 .option(ChannelOption.SO_KEEPALIVE, true)
@@ -203,7 +204,7 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
                         }
                         p.addLast(
                                 new HttpClientCodec(),
-                                new HttpObjectAggregator(81920),
+                                new HttpObjectAggregator(8192000),
                                 WebSocketClientCompressionHandler.INSTANCE,
                                 handler);
                     }
@@ -219,6 +220,7 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
                         }
                     }
                 });
+
     }
 
     @Override
@@ -226,7 +228,15 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
         if (ctx.channel().isActive()) {
             ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
         }
+        //释放锁
+
         log.warn("\tBad Connection! ({})", cause.getMessage());
+    }
+
+    public void channelInactive(ChannelHandlerContext ctx) {
+
+        //释放锁
+
     }
 
     private boolean isAgentXNeeded(String domain) {

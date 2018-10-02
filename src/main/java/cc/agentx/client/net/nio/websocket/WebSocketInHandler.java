@@ -16,6 +16,7 @@
 
 package cc.agentx.client.net.nio.websocket;
 
+import cc.agentx.client.Configuration;
 import cc.agentx.wrapper.Wrapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -80,8 +81,12 @@ public final class WebSocketInHandler extends SimpleChannelInboundHandler<WebSoc
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         if (dstChannel.isActive()) {
-            dstChannel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+            {
+                dstChannel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+            }
         }
+        //释放锁
+    
     }
 
     @Override
@@ -89,5 +94,7 @@ public final class WebSocketInHandler extends SimpleChannelInboundHandler<WebSoc
         log.info("\t          Proxy <- Target \tDisconnect");
         log.info("\tClient <- Proxy           \tDisconnect");
         ctx.close();
+        //释放锁
+        Configuration.INSTANCE.getSemaphore().release();
     }
 }

@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.concurrent.Semaphore;
 
 public class Configuration {
     private static final Logger log = LoggerFactory.getLogger(Configuration.class);
@@ -67,6 +68,8 @@ public class Configuration {
     private String consoleDomain;
 
     private int consolePort;
+
+    private  Semaphore semaphore=new Semaphore(5);
 
     private Configuration() {
     }
@@ -209,6 +212,12 @@ public class Configuration {
     public Boolean isSsl() {
         return ssl;
     }
+
+    public Semaphore getSemaphore() {
+        return semaphore;
+    }
+
+    ;
 
     public Wrapper getWrapper() {
         Wrapper[] wrappers = new Wrapper[process.length];
