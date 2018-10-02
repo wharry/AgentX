@@ -38,6 +38,10 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
 import io.netty.handler.codec.socks.*;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.FutureListener;
@@ -157,8 +161,8 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
                 }
         );
 
-        String host = request.host();
-        int port = request.port();
+       String host = request.host();
+       int port = request.port();
         if (host.equals(config.getConsoleDomain())) {
             host = "localhost";
             port = config.getConsolePort();
@@ -166,11 +170,25 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
             host = config.getServerHost();
             port = config.getServerPort();
         }
-        URI uri = new URI("ws://" + host + ":" + port + "/websocket");
+        String url;
+        final SslContext sslCtx;
+        if(config.isSsl()){
+            url="wss://" + host + ":" + port + "/websocket";
+            sslCtx = SslContextBuilder.forClient()
+                    .trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+            port=443;
+        }else
+        {
+            url="ws://" + host + ":" + port + "/websocket";
+            sslCtx = null;
+        }
+        URI uri = new URI(url);
        // host= DnsCache.get(host);
         // ping target
         WebSocketHandShakerHandler handler = new WebSocketHandShakerHandler(WebSocketClientHandshakerFactory.newHandshaker(
                 uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()), promise, System.currentTimeMillis());
+        final String inerHost=host;
+        final int inerPort=port;
         bootstrap.group(ctx.channel().eventLoop())
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
@@ -180,7 +198,9 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline p = ch.pipeline();
-
+                        if (sslCtx != null) {
+                            p.addLast(sslCtx.newHandler(ch.alloc(), inerHost, inerPort));
+                        }
                         p.addLast(
                                 new HttpClientCodec(),
                                 new HttpObjectAggregator(81920),

@@ -30,6 +30,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
@@ -49,18 +52,25 @@ public final class XServer {
         return new XServer();
     }
 
-    public void start() {
+    public void start() throws Exception {
         Configuration config = Configuration.INSTANCE;
-        LoggerContext factory =(LoggerContext) LoggerFactory.getILoggerFactory();
+        LoggerContext factory = (LoggerContext) LoggerFactory.getILoggerFactory();
         //factory.getLogger("ROOT").setLevel(Level.ERROR);
         InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
-
+        // Configure SSL.
+        final SslContext sslCtx;
+        if (config.isSsl()) {
+            SelfSignedCertificate ssc = new SelfSignedCertificate();
+            sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+        } else {
+            sslCtx = null;
+        }
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class).childHandler(new WebSocketServerInitializer(null));
+                    .channel(NioServerSocketChannel.class).childHandler(new WebSocketServerInitializer(sslCtx));
 //                    .childHandler(new ChannelInitializer<SocketChannel>() {
 //                        protected void initChannel(SocketChannel socketChannel) throws Exception {
 //                            socketChannel.pipeline()

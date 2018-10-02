@@ -53,7 +53,7 @@ public class Configuration {
     @Expose
     private String host = "0.0.0.0";
     @Expose
-    private int port = 8080;
+    private int port = 443;
     @Expose
     private int[] relayPort = {};
     @Expose
@@ -70,6 +70,7 @@ public class Configuration {
     private int writeLimit = 0;
     @Expose
     private int readLimit = 0;
+    private boolean ssl = true;
 
     private SocketTunnel[] relays;
 
@@ -155,6 +156,9 @@ public class Configuration {
         }
         if(System.getenv().get("PORT")!=null){
             Configuration.INSTANCE.port=Integer.valueOf(System.getenv().get("PORT"));
+        }
+        if(System.getenv().get("ssl")!=null){
+            Configuration.INSTANCE.ssl=Boolean.valueOf(System.getenv().get("ssl"));
         }
         log.debug(INSTANCE.toString());
     }
@@ -255,6 +259,14 @@ public class Configuration {
 
     public int getReadLimit() {
         return readLimit;
+    }
+
+    public boolean isSsl() {
+        return ssl;
+    }
+
+    public void setSsl(boolean ssl) {
+        this.ssl = ssl;
     }
 
     public Wrapper getWrapper() {

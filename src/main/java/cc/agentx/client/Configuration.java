@@ -61,6 +61,8 @@ public class Configuration {
     private String password = "my_password";
     @Expose
     private String[] process = {"encrypt"};
+    @Expose
+    private Boolean ssl = false;
 
     private String consoleDomain;
 
@@ -202,6 +204,10 @@ public class Configuration {
 
     public String getConsoleDomain() {
         return consoleDomain;
+    }
+
+    public Boolean isSsl() {
+        return ssl;
     }
 
     public Wrapper getWrapper() {
