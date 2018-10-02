@@ -53,7 +53,7 @@ public class Configuration {
     @Expose
     private String host = "0.0.0.0";
     @Expose
-    private int port = 443;
+    private int port = 8080;
     @Expose
     private int[] relayPort = {};
     @Expose
@@ -70,7 +70,7 @@ public class Configuration {
     private int writeLimit = 0;
     @Expose
     private int readLimit = 0;
-    private boolean ssl = true;
+    private boolean ssl = false;
 
     private SocketTunnel[] relays;
 
