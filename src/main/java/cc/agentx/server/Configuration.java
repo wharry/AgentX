@@ -153,7 +153,7 @@ public class Configuration {
         if(Configuration.INSTANCE.password == null){
             Configuration.INSTANCE.password=System.getenv().get("password");
         }
-        if(System.getenv().get("port")!=null){
+        if(System.getenv().get("PORT")!=null){
             Configuration.INSTANCE.port=Integer.valueOf(System.getenv().get("port"));
         }
         log.debug(INSTANCE.toString());
