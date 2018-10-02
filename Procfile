@@ -1,0 +1,1 @@
+web: java -jar target/agentx-1.3.0.jar
