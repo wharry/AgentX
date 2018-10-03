@@ -53,7 +53,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         }
        // pipeline.addLast("logging", new LoggingHandler(LogLevel.ERROR));
         pipeline.addLast(new HttpServerCodec());
-        pipeline.addLast(new HttpObjectAggregator(65536));
+        pipeline.addLast(new HttpObjectAggregator(8192000));
         pipeline.addLast(new WebSocketServerCompressionHandler());
         pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
         pipeline.addLast(new WebSocketIndexPageHandler(WEBSOCKET_PATH));
