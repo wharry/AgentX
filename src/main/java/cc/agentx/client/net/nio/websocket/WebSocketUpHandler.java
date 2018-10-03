@@ -16,6 +16,7 @@
 
 package cc.agentx.client.net.nio.websocket;
 
+import cc.agentx.client.Configuration;
 import cc.agentx.wrapper.Wrapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -72,7 +73,8 @@ public final class WebSocketUpHandler extends ChannelInboundHandlerAdapter {
             log.info("\tClient <- Proxy           \tDisconnect");
         }
         dstChannel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-
+        //释放锁
+       // System.out.println("up is inactive" + ctx.channel().id());
     }
 
     @Override

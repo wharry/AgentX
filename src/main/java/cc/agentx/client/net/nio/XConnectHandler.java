@@ -189,11 +189,11 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
         final String inerHost = host;
         final int inerPort = port;
         //有足够的锁才能连接
-
+       // Configuration.INSTANCE.getSemaphore().acquireUninterruptibly();
         ChannelFuture cf = bootstrap.group(ctx.channel().eventLoop())
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
-                .option(ChannelOption.SO_KEEPALIVE, true)
+               // .option(ChannelOption.SO_KEEPALIVE, true)
                 //.handler(new XPingHandler(promise, System.currentTimeMillis()))
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override

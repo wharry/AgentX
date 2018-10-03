@@ -56,15 +56,15 @@ public final class WebSocketInHandler extends SimpleChannelInboundHandler<WebSoc
             if (dstChannel.isActive()) {
                 ByteBuf byteBuf = frame.content();
                 try {
-                   // if (!byteBuf.hasArray()) {
-                        byte[] bytes = new byte[byteBuf.readableBytes()];
-                        byteBuf.getBytes(0, bytes);
-                        bytes = wrapper.unwrap(bytes);
-                        if (bytes != null) {
-                            dstChannel.writeAndFlush(Unpooled.wrappedBuffer(bytes));
-                            log.info("\tClient ==========> Target \tSend [{} bytes]", bytes.length);
-                        }
-                   // }
+                    // if (!byteBuf.hasArray()) {
+                    byte[] bytes = new byte[byteBuf.readableBytes()];
+                    byteBuf.getBytes(0, bytes);
+                    bytes = wrapper.unwrap(bytes);
+                    if (bytes != null) {
+                        dstChannel.writeAndFlush(Unpooled.wrappedBuffer(bytes));
+                        log.info("\tClient ==========> Target \tSend [{} bytes]", bytes.length);
+                    }
+                    // }
                 } finally {
                     //ReferenceCountUtil.release(frame);
                 }
@@ -75,6 +75,7 @@ public final class WebSocketInHandler extends SimpleChannelInboundHandler<WebSoc
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
+        //System.out.println("in is active" + ctx.channel().id());
         ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
     }
 
@@ -86,7 +87,8 @@ public final class WebSocketInHandler extends SimpleChannelInboundHandler<WebSoc
             }
         }
         //释放锁
-    
+        //System.out.println("in is inactive" + ctx.channel().id());
+        //Configuration.INSTANCE.getSemaphore().release();
     }
 
     @Override
@@ -95,6 +97,6 @@ public final class WebSocketInHandler extends SimpleChannelInboundHandler<WebSoc
         log.info("\tClient <- Proxy           \tDisconnect");
         ctx.close();
         //释放锁
-        Configuration.INSTANCE.getSemaphore().release();
+        //Configuration.INSTANCE.getSemaphore().release();
     }
 }

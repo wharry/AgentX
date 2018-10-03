@@ -69,7 +69,7 @@ public class Configuration {
 
     private int consolePort;
 
-    private  Semaphore semaphore=new Semaphore(5);
+    private  Semaphore semaphore=new Semaphore(20);
 
     private Configuration() {
     }
