@@ -55,7 +55,7 @@ public final class XServer {
     public void start() throws Exception {
         Configuration config = Configuration.INSTANCE;
         LoggerContext factory = (LoggerContext) LoggerFactory.getILoggerFactory();
-        //factory.getLogger("ROOT").setLevel(Level.ERROR);
+        factory.getLogger("ROOT").setLevel(Level.ERROR);
         InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
         // Configure SSL.
         final SslContext sslCtx;
