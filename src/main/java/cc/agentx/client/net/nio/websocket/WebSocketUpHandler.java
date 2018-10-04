@@ -79,6 +79,7 @@ public final class WebSocketUpHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.printStackTrace();
         log.info("\t          Proxy <- Target \tDisconnect");
         log.info("\tClient <- Proxy           \tDisconnect");
         ctx.close();

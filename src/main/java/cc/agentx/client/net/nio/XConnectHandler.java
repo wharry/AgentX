@@ -21,7 +21,6 @@ import cc.agentx.client.net.nio.websocket.WebSocketHandShakerHandler;
 import cc.agentx.client.net.nio.websocket.WebSocketInHandler;
 import cc.agentx.client.net.nio.websocket.WebSocketUpHandler;
 import cc.agentx.protocol.request.XRequestResolver;
-import cc.agentx.server.cache.DnsCache;
 import cc.agentx.wrapper.Wrapper;
 import cc.agentx.wrapper.WrapperFactory;
 import io.netty.bootstrap.Bootstrap;
@@ -40,7 +39,6 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketCl
 import io.netty.handler.codec.socks.*;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.Future;
@@ -144,7 +142,8 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
                                                 ctx.pipeline()
                                                         .remove(XConnectHandler.this);
                                                 outboundChannel.pipeline()
-                                                        .addLast(new WebSocketInHandler(ctx.channel(), proxyMode ? wrapper : rawWrapper));
+                                                        .addLast(new WebSocketInHandler(ctx.channel(), proxyMode ?
+                                                                wrapper : rawWrapper));
                                                 ctx.pipeline()
                                                         .addLast(new WebSocketUpHandler(outboundChannel, proxyMode ? wrapper : rawWrapper));
                                             }
@@ -185,15 +184,16 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
         // host= DnsCache.get(host);
         // ping target
         WebSocketHandShakerHandler handler = new WebSocketHandShakerHandler(WebSocketClientHandshakerFactory.newHandshaker(
-                uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()), promise, System.currentTimeMillis());
+                uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders(),1024*1024*10), promise, System
+                .currentTimeMillis());
         final String inerHost = host;
         final int inerPort = port;
         //有足够的锁才能连接
        // Configuration.INSTANCE.getSemaphore().acquireUninterruptibly();
         ChannelFuture cf = bootstrap.group(ctx.channel().eventLoop())
                 .channel(NioSocketChannel.class)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
-               // .option(ChannelOption.SO_KEEPALIVE, true)
+                //.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+                .option(ChannelOption.SO_KEEPALIVE, true)
                 //.handler(new XPingHandler(promise, System.currentTimeMillis()))
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override

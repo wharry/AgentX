@@ -54,7 +54,7 @@ public final class XClient {
 
     public void start() {
         LoggerContext factory =(LoggerContext) LoggerFactory.getILoggerFactory();
-        //factory.getLogger("ROOT").setLevel(Level.ERROR);
+        factory.getLogger("ROOT").setLevel(Level.ERROR);
         Configuration config = Configuration.INSTANCE;
         InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
         bossGroup = new NioEventLoopGroup(1);

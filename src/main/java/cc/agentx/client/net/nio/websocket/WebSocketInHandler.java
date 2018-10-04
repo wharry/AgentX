@@ -20,10 +20,7 @@ import cc.agentx.client.Configuration;
 import cc.agentx.wrapper.Wrapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
@@ -33,7 +30,7 @@ import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.util.Locale;
 
-public final class WebSocketInHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
+public final class WebSocketInHandler extends ChannelInboundHandlerAdapter {
     private static final InternalLogger log = InternalLoggerFactory.getInstance(WebSocketInHandler.class);
 
     private final Channel dstChannel;
@@ -46,7 +43,7 @@ public final class WebSocketInHandler extends SimpleChannelInboundHandler<WebSoc
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object frame) throws Exception {
         if (frame instanceof TextWebSocketFrame) {
             // Send the uppercase string back.
             String request = ((TextWebSocketFrame) frame).text();
@@ -54,7 +51,7 @@ public final class WebSocketInHandler extends SimpleChannelInboundHandler<WebSoc
             ctx.channel().writeAndFlush(new TextWebSocketFrame(request.toUpperCase(Locale.US)));
         } else if (frame instanceof BinaryWebSocketFrame) {// 二进制数据接收
             if (dstChannel.isActive()) {
-                ByteBuf byteBuf = frame.content();
+                ByteBuf byteBuf = ((BinaryWebSocketFrame)frame).content();
                 try {
                     // if (!byteBuf.hasArray()) {
                     byte[] bytes = new byte[byteBuf.readableBytes()];
@@ -66,7 +63,7 @@ public final class WebSocketInHandler extends SimpleChannelInboundHandler<WebSoc
                     }
                     // }
                 } finally {
-                    //ReferenceCountUtil.release(frame);
+                    ReferenceCountUtil.release(frame);
                 }
             }
 
@@ -93,6 +90,7 @@ public final class WebSocketInHandler extends SimpleChannelInboundHandler<WebSoc
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.printStackTrace();
         log.info("\t          Proxy <- Target \tDisconnect");
         log.info("\tClient <- Proxy           \tDisconnect");
         ctx.close();
