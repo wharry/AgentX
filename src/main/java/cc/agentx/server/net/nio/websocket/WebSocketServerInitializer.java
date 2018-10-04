@@ -26,6 +26,7 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 
 import java.util.concurrent.Executors;
@@ -53,7 +54,8 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         }
        // pipeline.addLast("logging", new LoggingHandler(LogLevel.ERROR));
         pipeline.addLast(new HttpServerCodec());
-        pipeline.addLast(new HttpObjectAggregator(8192000));
+        pipeline.addLast(new HttpObjectAggregator(1024*1024*10));
+        pipeline.addLast(new ChunkedWriteHandler());
         pipeline.addLast(new WebSocketServerCompressionHandler());
         pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
         pipeline.addLast(new WebSocketIndexPageHandler(WEBSOCKET_PATH));

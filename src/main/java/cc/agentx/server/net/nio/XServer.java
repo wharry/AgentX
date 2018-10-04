@@ -22,8 +22,10 @@ import cc.agentx.server.net.nio.websocket.WebSocketServerInitializer;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -69,7 +71,13 @@ public final class XServer {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
+
             bootstrap.group(bossGroup, workerGroup)
+                    .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .childOption(ChannelOption.TCP_NODELAY, true)
+                    .childOption(ChannelOption.SO_KEEPALIVE, true)
+                    .option(ChannelOption.SO_BACKLOG, 1024)
                     .channel(NioServerSocketChannel.class).childHandler(new WebSocketServerInitializer(sslCtx));
 //                    .childHandler(new ChannelInitializer<SocketChannel>() {
 //                        protected void initChannel(SocketChannel socketChannel) throws Exception {

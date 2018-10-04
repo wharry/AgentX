@@ -204,7 +204,7 @@ public final class XConnectHandler extends SimpleChannelInboundHandler<SocksCmdR
                         }
                         p.addLast(
                                 new HttpClientCodec(),
-                                new HttpObjectAggregator(8192000),
+                                new HttpObjectAggregator(1024*1024*10),
                                 WebSocketClientCompressionHandler.INSTANCE,
                                 handler);
                     }

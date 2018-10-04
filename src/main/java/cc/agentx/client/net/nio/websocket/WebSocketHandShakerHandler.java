@@ -66,6 +66,7 @@ public class WebSocketHandShakerHandler extends SimpleChannelInboundHandler<Obje
                 promise.setSuccess(ctx.channel());
             } catch (WebSocketHandshakeException e) {
                 log.info("WebSocket Client failed to connect");
+                System.out.println("WebSocket Client failed to connect");
                 promise.setFailure(e);
             }
             return;
